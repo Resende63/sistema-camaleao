@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Camaleão - Gestão & Orçamentos Inteligentes</title>
+    <!-- Biblioteca de Gráficos -->
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        :root {
+            --bg-body: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Menu Superior */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f172a;
+            padding: 15px 50px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .navbar h2 { margin: 0; color: var(--accent-color); font-size: 1.5em; }
+        .btn-entrar {
+            background: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-entrar:hover { background: #2563eb; }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .hero h1 { font-size: 2.8em; margin-bottom: 15px; background: linear-gradient(to right, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--text-sub); font-size: 1.2em; margin-bottom: 30px; }
+
+        /* Grade do Dashboard Demostração */
+        .dashboard-container {
+            max-width: 1100px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .metric-card h3 { margin: 0; font-size: 0.9em; color: var(--text-sub); text-transform: uppercase; }
+        .metric-card p { margin: 10px 0 0; font-size: 1.8em; font-weight: bold; }
+        .verde { color: var(--success-color); }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 60px;
+        }
+        .chart-card h3 { margin-0-0-20px-0; font-size: 1.2em; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+
+        /* Área de Avaliações */
+        .reviews-section {
+            background: #0f172a;
+            padding: 60px 20px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+        .reviews-section h2 { font-size: 2em; margin-bottom: 40px; }
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .review-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: left;
+            position: relative;
+        }
+        .review-text { font-style: italic; color: #cbd5e1; margin-bottom: 15px; line-height: 1.5; }
+        .review-author { font-weight: bold; color: var(--accent-color); }
+        .review-prof { font-size: 0.85em; color: var(--text-sub); }
+        .estrelas { color: #f59e0b; margin-bottom: 10px; }
+
+        .footer {
+            text-align: center;
+            padding: 35px 20px;
+            background: #090d16;
+            font-size: 0.9em;
+            color: var(--text-sub);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        @media(max-width: 600px) {
+            .navbar { padding: 15px 20px; }
+            .hero h1 { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGAÇÃO -->
+    <div class="navbar">
+        <h2>🦎 Camaleão Pro</h2>
+        <a href="/sistema" class="btn-entrar">Acessar Sistema 🚀</a>
+    </div>
+
+    <!-- SEÇÃO HERO PRINCIPAL -->
+    <div class="hero">
+        <h1>O Sistema de Orçamentos que se adapta ao seu negócio</h1>
+        <p>Desenvolvido sob medida para Eletricistas, Instaladores de Forros, Gesseiros, Serralherias e Marmorarias. Controle sua margem de lucro real na frente do cliente.</p>
+        <a href="/sistema" class="btn-entrar" style="font-size: 1.1em; padding: 15px 40px;">Simular um Orçamento Agora</a>
+    </div>
+
+    <!-- DASHBOARD DE DEMONSTRAÇÃO IMPECÁVEL -->
+    <div class="dashboard-container">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Orçamentos Gerados</h3>
+                <p>142</p>
+            </div>
+            <div class="metric-card">
+                <h3>Propostas Fechadas</h3>
+                <p class="verde">98 (69%)</p>
+            </div>
+            <div class="metric-card">
+                <h3>Faturamento Mensal</h3>
+                <p>R$ 24.530,00</p>
+            </div>
+            <div class="metric-card">
+                <h3>Lucro Líquido Real</h3>
+                <p class="verde">R$ 11.240,00</p>
+            </div>
+        </div>
+
+        <!-- GRÁFICO DINÂMICO DE FATURAMENTO -->
+        <div class="chart-card">
+            <h3>📈 Demonstrativo de Desempenho Mensal (Exemplo de Gráfico)</h3>
+            <canvas id="meuGrafico" style="max-height: 300px;"></canvas>
+        </div>
+    </div>
+
+    <!-- SEÇÃO DE AVALIAÇÕES (DEPOIMENTOS) -->
+    <div class="reviews-section">
+        <h2>⭐ O que dizem os profissionais que usam:</h2>
+        <div class="reviews-grid">
+            <!-- Depoimento 1: Eletricista -->
+            <div class="review-card">
+                <div class="estrelas">★★★★★</div>
+                <p class="review-text">"Trabalho em obras residenciais grandes de condomínio na Serra. Adicionar 80 ou 100 pontos de tomadas e chuveiros no cálculo na frente do cliente me deu um profissionalismo gigante. Fecho orçamentos muito mais rápido!"</p>
+                <p class="review-author">Marcos Antônio</p>
+                <p class="review-prof">Eletricista Predial & Industrial</p>
+            </div>
+            <!-- Depoimento 2: Instalador de Forro -->
+            <div class="review-card">
+                <div class="estrelas">★★★★★</div>
+                <p class="review-text">"Antes eu quebrava a cabeça calculando m² e correndo o risco de esquecer o valor do material. Com o Camaleão, eu coloco a largura e comprimento do teto e o lucro sai calculado na hora, sem erro!"</p>
+                <p class="review-author">Cláudio Silva</p>
+                <p class="review-prof">Instalador de Forro de PVC e Gesso</p>
+            </div>
+            <!-- Depoimento 3: Serralheiro -->
+            <div class="review-card">
+                <div class="estrelas">★★★★★</div>
+                <p class="review-text">"O sistema é espetacular. Consigo mudar a tela para o modo escuro na oficina ou claro quando estou na rua sob o sol. O cálculo de margem oculta salvou minhas finanças."</p>
+                <p class="review-author">Rodrigo Peres</p>
+                <p class="review-prof">Serralheria Estrutural</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ ASSINADO -->
+    <div class="footer">
+        <p>Plataforma Camaleão Pro | Todos os direitos reservados</p>
+        <p>Software projetado e desenvolvido por <b>Mauro Vieira de Resende</b></p>
+    </div>
+
+    <!-- SCRIPT PARA RENDERIZAR O GRÁFICO INTERATIVO -->
+    <script>
+        const ctx = document.getElementById('meuGrafico').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'Faturamento Bruto (R$)',
+                    data:,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true
+                }, {
+                    label: 'Lucro Limpo no Bolso (R$)',
+                    data:,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#94a3b8' } }
+                },
+                scales: {
+                    x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                    y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
