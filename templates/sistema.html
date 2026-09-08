@@ -1,1 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Camaleão - Orçamentos</title>
+    <style>
+        /* Cores Base do Tema Escuro (Azul Escuro + Cinza) */
+        :root {
+            --bg-body: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+        }
+
+        /* Cores Base do Tema Claro (Muda via JavaScript) */
+        [data-theme="light"] {
+            --bg-body: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border-color: #cbd5e1;
+            --accent-color: #2563eb;
+            --success-color: #059669;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .header h1 { margin: 0; font-size: 1.4em; color: var(--accent-color); }
+
+        /* Botão Mudar Tema */
+        .btn-theme {
+            background: var(--border-color);
+            border: none;
+            color: var(--text-main);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .card h2 { margin-top: 0; font-size: 1.2em; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+
+        .row { display: flex; gap: 15px; margin-bottom: 12px; }
+        .col { flex: 1; display: flex; flex-direction: column; }
+
+        label { font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: var(--text-sub); }
+        input {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1em;
+            outline: none;
+        }
+        input:focus { border-color: var(--accent-color); }
+
+        .item-linha {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .btn-action {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-add-item { background: #475569; margin-bottom: 10px; }
+
+        .resultado-box {
+            background: var(--bg-card);
+            border: 2px solid var(--success-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .lucro-secreto {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px dashed var(--success-color);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .footer { text-align: center; margin-top: 30px; font-size: 0.85em; color: var(--text-sub); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- HEADER COM MUDANÇA DE TEMA -->
+        <div class="header">
+            <h1>🦎 Sistema Camaleão</h1>
+            <button class="btn-theme" onclick="alternarTema()">🌓 Mudar Tema</button>
+        </div>
+
+        <!-- MÓDULO 1: CÁLCULO POR METRO QUADRADO (Gesso, Forro, Marmoraria) -->
+        <div class="card">
+            <h2>📐 Medidas por Área (m²)</h2>
+            <div class="row">
+                <div class="col">
+                    <label>Largura (m):</label>
+                    <input type="number" id="largura" placeholder="0.00" oninput="calcularTudo()">
+                </div>
+                <div class="col">
+                    <label>Comprimento (m):</label>
+                    <input type="number" id="comprimento" placeholder="0.00" oninput="calcularTudo()">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label>Preço Venda (R$ por m²):</label>
+                    <input type="number" id="preco_m2" placeholder="0.00" oninput="calcularTudo()">
+                </div>
+                <div class="col">
+                    <label>Custo Material (R$ por m²):</label>
+                    <input type="number" id="custo_m2" placeholder="0.00" oninput="calcularTudo()">
+                </div>
+            </div>
+        </div>
+
+        <!-- MÓDULO 2: CÁLCULO POR ITENS/PONTOS (Eletricista, Encanador, Adicionais) -->
+        <div class="card">
+            <h2>🔌 Itens Adicionais / Pontos (Ex: Tomadas)</h2>
+            <div id="lista-itens">
+                <!-- Linhas de itens serão adicionadas aqui via JavaScript -->
+            </div>
+            <button class="btn-action btn-add-item" onclick="adicionarLinhaItem()">➕ Adicionar Item ao Orçamento</button>
+        </div>
+
+        <!-- RESULTADOS CONSOLIDADOS -->
+        <div class="resultado-box">
+            <h3 style="margin: 0; color: var(--text-sub);">Valor Total do Orçamento</h3>
+            <h1 id="res-cliente" style="font-size: 2.5em; margin: 10px 0; color: var(--accent-color);">R$ 0,00</h1>
+            
+            <div class="lucro-secreto">
+                🤫 Margem Oculta:<br>
+                Gasto Material: <span id="res-custo">R$ 0,00</span> | Seu Lucro Limpo: <span id="res-lucro">R$ 0,00</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Sistema Camaleão Universal | Desenvolvido por <b>Mauro Vieira de Resende</b></p>
+        </div>
+
+    </div>
+
+    <script>
+        // Função para Alternar entre Tema Claro e Escuro
+        function alternarTema() {
+            const body = document.body;
+            const temaAtual = body.getAttribute("data-theme");
+            if (temaAtual === "light") {
+                body.removeAttribute("data-theme");
+            } else {
+                body.setAttribute("data-theme", "light");
+            }
+        }
+
+        // Função para Adicionar Itens Dinamicamente (Ex: Tomadas, Chuveiros)
+        function adicionarLinhaItem() {
+            const container = document.getElementById("lista-itens");
+            const div = document.createElement("div");
+            div.className = "item-linha";
+            div.innerHTML = `
+                <input type="text" placeholder="Item (Ex: Tomada)" style="flex: 2;" oninput="calcularTudo()">
+                <input type="number" placeholder="Qtd" class="item-qtd" style="flex: 1;" oninput="calcularTudo()">
+                <input type="number" placeholder="Venda R$" class="item-venda" style="flex: 1.2;" oninput="calcularTudo()">
+                <input type="number" placeholder="Custo R$" class="item-custo" style="flex: 1.2;" oninput="calcularTudo()">
+                <button onclick="this.parentElement.remove(); calcularTudo();" style="background:#ef4444; border:none; color:white; padding:10px; border-radius:8px; cursor:pointer;">❌</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Envia todos os dados da tela para o Python calcular em tempo real
+        function calcularTudo() {
+            const largura = document.getElementById("largura").value;
+            const comprimento = document.getElementById("comprimento").value;
+            const preco_m2 = document.getElementById("preco_m2").value;
+            const custo_m2 = document.getElementById("custo_m2").value;
+
+            const itens = [];
+            const linhas = document.querySelectorAll(".item-linha");
+            linhas.forEach(linha => {
+                itens.push({
+                    quantidade: linha.querySelector(".item-qtd").value,
+                    venda: linha.querySelector(".item-venda").value,
+                    custo: linha.querySelector(".item-custo").value
+                });
+            });
+
+            fetch("/calcular", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ largura, comprimento, preco_m2, custo_m2, itens })
+            })
+            .then(res => res.json())
+            .then(dados => {
+                document.getElementById("res-cliente").innerText = "R$ " + dados.total_cliente.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById("res-custo").innerText = "R$ " + dados.custo_total.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById("res-lucro").innerText = "R$ " + dados.lucro_liquido.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            });
+        }
+
+        // Inicia com uma linha de item padrão na tela
+        adicionarLinhaItem();
+    </script>
+</body>
+</html>
 
