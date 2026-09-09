@@ -1,66 +1,112 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify, render_template
+from werkzeug.security import generate_password_hash
+import os
+import psycopg2 
+from psycopg2.extras import RealDictCursor
+import re
 
 app = Flask(__name__)
 
-# 1. ROTA DA PÁGINA INICIAL DE VENDAS
-@app.route("/")
-def home():
-    return render_template("index.html")
+# Configuração da URL do Banco de Dados obtida com segurança do Render
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# 2. ROTA DA CALCULADORA DO SISTEMA
-@app.route("/sistema")
-def abrir_sistema():
-    return render_template("sistema.html")
+def obtener_conexao_banco():
+    """Cria uma conexão segura com o banco de dados PostgreSQL na nuvem."""
+    return psycopg2.connect(DATABASE_URL, sslmode='require')
 
-# 3. ROTA QUE FAZ OS CÁLCULOS INTELIGENTES
-@app.route("/calcular", methods=["POST"])
-def calcular():
-    dados = request.json
+def inicializar_banco_de_dados():
+    """Cria a tabela de orçamentos se ela não existir no sistema."""
+    conn = obtener_conexao_banco()
+    cursor = conn.cursor()
     
-    # Cálculo por Área (m²)
-    largura = float(dados.get("largura", 0) or 0)
-    comprimento = float(dados.get("comprimento", 0) or 0)
-    preco_m2 = float(dados.get("preco_m2", 0) or 0)
-    custo_m2 = float(dados.get("custo_m2", 0) or 0)
-    
-    area = largura * comprimento
-    faturamento_area = area * preco_m2
-    custo_area = area * custo_m2
-    
-    # Cálculo por Itens (Tomadas, Bocais, etc.)
-    itens = dados.get("itens", [])
-    faturamento_itens = 0
-    custo_itens = 0
-    
-    for item in itens:
-        qtd = float(item.get("quantidade", 0) or 0)
-        venda_uni = float(item.get("venda", 0) or 0)
-        custo_uni = float(item.get("custo", 0) or 0)
-        
-        faturamento_itens += (qtd * venda_uni)
-        custo_itens += (qtd * custo_uni)
-        
-    # Totais Consolidados
-    total_cliente = faturamento_area + faturamento_itens
-    custo_total = custo_area + custo_itens
-    lucro_liquido = total_cliente - custo_total
-    
-    return jsonify({
-        "area": round(area, 2),
-        "total_cliente": round(total_cliente, 2),
-        "custo_total": round(custo_total, 2),
-        "lucro_liquido": round(lucro_liquido, 2)
-    })
-    # 1. ROTA PARA EXIBIR O FORMULÁRIO PREMIUM DE OBRAS
+    # TABELA CORPORATIVA DE ORÇAMENTOS E MEDIDAS (FEITA PARA DURAR ANOS)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS orcamentos_premium (
+            id SERIAL PRIMARY KEY,
+            cliente_nome VARCHAR(255) NOT NULL,
+            cliente_contato VARCHAR(50) NOT NULL,
+            obra_endereco TEXT NOT NULL,
+            data_emissao DATE NOT NULL,
+            status_lembrete VARCHAR(50) DEFAULT 'pendente',
+            obra_descricao TEXT,
+            largura NUMERIC(10, 2) DEFAULT 0,
+            comprimento NUMERIC(10, 2) DEFAULT 0,
+            valor_faturamento NUMERIC(10, 2) NOT NULL,
+            valor_custo NUMERIC(10, 2) NOT NULL,
+            lucro_limpo NUMERIC(10, 2) NOT NULL,
+            data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    ''')
+    conn.commit()
+    cursor.close()
+    conn.close()
+    print("🚀 Banco de dados PostgreSQL validado com precisão cirúrgica!")
+
+# Inicializa o banco assim que o Camaleão acorda no Render
+if DATABASE_URL:
+    try:
+        inicializar_banco_de_dados()
+    except Exception as e:
+        print(f"⚠️ Alerta ao iniciar o banco (Sem problemas se ainda não configuramos a URL): {e}")
+
+EMAIL_REGEX = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+
+
+# =========================================================================
+# AS SUAS ROTAS DO SISTEMA (A interligação das telas que já funcionam)
+# =========================================================================
+
+# 1. ROTA DA PÁGINA INICIAL (PAINEL PRINCIPAL)
+@app.route('/sistema', methods=['GET'])
+def painel_principal():
+    return render_template('index.html')
+
+# 2. ROTA PARA EXIBIR A TELA DE LOGIN/CADASTRO DE USUÁRIO
+@app.route('/sistema/cadastro', methods=['GET'])
+def tela_cadastro():
+    return render_template('cadastro.html')
+
+# 3. ROTA PARA EXIBIR O FORMULÁRIO PREMIUM DE OBRAS
 @app.route('/sistema/registrar-obra', methods=['GET'])
 def tela_cadastro_obra():
     return render_template('cadastro_obra.html')
 
+# 4. ROTA PARA EXIBIR A FICHA DE PRODUÇÃO DO OPERÁRIO
+@app.route('/sistema/ordem-servico', methods=['GET'])
+def tela_ordem_servico():
+    return render_template('ordem_servico.html')
 
-# 2. ROTA PARA RECEBER, VALIDAR E SALVAR OS DADOS DA OBRA
+# 5. ROTA DO CALCULADOR DE ORÇAMENTOS
+@app.route('/sistema/sistema', methods=['GET'])
+def tela_calculador():
+    return render_template('sistema.html')
+
+
+# =========================================================================
+# ROTAS DE SINAL VERDE (PROCESSAMENTO DOS DADOS)
+# =========================================================================
+
+# CADASTRO DE USUÁRIO (LOGIN SEGURO)
+@app.route('/sistema/cadastro', methods=['POST'])
+def cadastrar_usuario():
+    username = request.form.get('username')
+    email = request.form.get('email')
+    senha = request.form.get('senha')
+    
+    if not username or not email or not senha:
+        return "Todos os campos são obrigatórios.", 400
+    if not re.match(EMAIL_REGEX, email):
+        return "Formato de e-mail inválido.", 400
+    if len(senha) < 8:
+        return "A senha deve ter no mínimo 8 caracteres.", 400
+
+    senha_criptografada = generate_password_hash(senha, method='pbkdf2:sha256', salt_length=16)
+    print(f"Usuário simulado no terminal: {username} | Senha: {senha_criptografada}")
+    return "<h1>Cadastro de usuário realizado com segurança!</h1>"
+
+# REGISTRO DE OBRA E ORÇAMENTOS
 @app.route('/sistema/registrar-obra', methods=['POST'])
 def registrar_obra():
-    # Coleta de dados com proteção de entrada
     cliente_nome = request.form.get('cliente_nome', '').strip()
     cliente_documento = request.form.get('cliente_documento', '').strip()
     cliente_contato = request.form.get('cliente_contato', '').strip()
@@ -69,7 +115,6 @@ def registrar_obra():
     status_lembrete = request.form.get('status_lembrete', '').strip()
     obra_descricao = request.form.get('obra_descricao', '').strip()
     
-    # Coleta dos valores financeiros (Garante formato numérico seguro)
     try:
         valor_faturamento = float(request.form.get('valor_faturamento', 0))
         valor_custo = float(request.form.get('valor_custo', 0))
@@ -77,51 +122,14 @@ def registrar_obra():
     except ValueError:
         return "Erro: Os valores financeiros inseridos são inválidos.", 400
 
-    # TRAVA DE SEGURANÇA: Validação de campos obrigatórios corporativos
     if not cliente_nome or not cliente_contato or not obra_endereco or not data_orcamento:
-        return "Erro de Segurança: Campos obrigatórios do cliente ou da obra estão faltando.", 400
+        return "Erro de Segurança: Campos obrigatórios faltando.", 400
 
-    # ESTRUTURAÇÃO DO REGISTRO INTEGRADO
-    # Os dados aqui ficam organizados e prontos para envio ao Banco de Dados
-    registro_obra_protegido = {
-        "cliente": {
-            "nome": cliente_nome,
-            "documento": cliente_documento,
-            "contato": cliente_contato
-        },
-        "obra": {
-            "endereco": obra_endereco,
-            "data_emissao": data_orcamento,
-            "descricao": obra_descricao,
-            "alerta_status": status_lembrete # Controla o lembrete contra esquecimento!
-        },
-        "financeiro": {
-            "faturamento": valor_faturamento,
-            "custo_material": valor_custo,
-            "lucro_real": lucro_limpo
-        }
-    }
+    print(f"Obra simulada no terminal: {cliente_nome} | Lucro: R$ {lucro_limpo:.2f}")
+    return "<h1>Obra registrada com sucesso no sistema!</h1>"
 
-    # MONITORAMENTO OPERACIONAL (Aparece direto no terminal do Render)
-    print("--- NOVO REGISTRO PREMIUM DETECTADO ---")
-    print(f"Cliente: {registro_obra_protegido['cliente']['nome']}")
-    print(f"Status do Alerta: {registro_obra_protegido['obra']['alerta_status'].upper()}")
-    print(f"Margem de Lucro Mapeada: R$ {registro_obra_protegido['financeiro']['lucro_real']:.2f}")
-    print("---------------------------------------")
 
-    # Retorno visual de sucesso para o usuário
-    return f"""
-    <div style="background-color: #1e2640; color: white; font-family: sans-serif; padding: 30px; border-radius: 8px; max-width: 500px; margin: 50px auto; text-align: center; border: 1px solid #10b981;">
-        <h2 style="color: #10b981;">✔ Registro Concluído com Sucesso!</h2>
-        <p>A obra de <strong>{cliente_nome}</strong> foi blindada na nuvem do Sistema Camaleão.</p>
-        <p>Alerta de monitoramento definido como: <strong>{status_lembrete.upper()}</strong></p>
-        <a href="/sistema/registrar-obra" style="color: #3b82f6; text-decoration: none; font-weight: bold;">[ Cadastrar Nova Obra ]</a>
-    </div>
-    """
-    # ROTA PARA EXIBIR A FICHA DE PRODUÇÃO DO TRABALHADOR
-@app.route('/sistema/ordem-servico', methods=['GET'])
-def tela_ordem_servico():
-    return render_template('ordem_servico.html')
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+if __name__ == '__main__':
+    # Configuração padrão para rodar na nuvem do Render
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
