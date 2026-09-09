@@ -118,6 +118,10 @@ def registrar_obra():
         <a href="/sistema/registrar-obra" style="color: #3b82f6; text-decoration: none; font-weight: bold;">[ Cadastrar Nova Obra ]</a>
     </div>
     """
+    # ROTA PARA EXIBIR A FICHA DE PRODUÇÃO DO TRABALHADOR
+@app.route('/sistema/ordem-servico', methods=['GET'])
+def tela_ordem_servico():
+    return render_template('ordem_servico.html')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
