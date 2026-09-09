@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camaleão - Ordem de Serviço Operacional</title>
+    <style>
+        :root {
+            --bg-principal: #121824;
+            --bg-card: #1e2640;
+            --texto-principal: #ffffff;
+            --texto-secundario: #8a99ad;
+            --accent-azul: #3b82f6;
+            --accent-laranja: #f59e0b;
+            --borda: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto-principal);
+            margin: 0;
+            padding: 15px;
+        }
+
+        .container-os {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Botão de Retorno Exigido pelo Supervisor */
+        .btn-retorno {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #141b2d;
+            color: var(--texto-principal);
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid var(--borda);
+            transition: background-color 0.2s;
+        }
+        .btn-retorno:hover {
+            background-color: var(--accent-azul);
+        }
+
+        .card-os {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--borda);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-os {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--borda);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            background-color: var(--accent-laranja);
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .info-grupo {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: var(--texto-secundario);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-valor {
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 3px;
+        }
+
+        .bloco-especificacoes {
+            background-color: #141b2d;
+            border-radius: 6px;
+            padding: 15px;
+            border: 1px solid var(--borda);
+            margin-top: 15px;
+        }
+
+        .texto-memorial {
+            white-space: pre-line; /* Mantém as quebras de linha que você digitar */
+            color: #e2e8f0;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-os">
+    <!-- BOTÃO DE RETORNO PARA DENTRO DO APP -->
+    <a href="/sistema" class="btn-retorno">⬅ Voltar ao Painel Principal</a>
+
+    <div class="card-os">
+        <div class="header-os">
+            <h2 style="margin:0; font-size: 18px; color: var(--accent-azul);">🛠️ Ficha de Execução de Campo</h2>
+            <span class="status-badge">Em Produção</span>
+        </div>
+
+        <div class="info-grupo">
+            <div class="info-label">Empresa / Cliente Visitado</div>
+            <div class="info-valor">GBJ Esquadria (Exemplo)</div>
+        </div>
+
+        <div class="info-grupo">
+            <div class="info-label">Local da Obra</div>
+            <div class="info-valor">Galpão Central - Setor Industrial</div>
+        </div>
+
+        <!-- O QUE INTERESSA PARA O TRABALHADOR (PINTOR, GESSEIRO, SERRALHEIRO) -->
+        <div class="bloco-especificacoes">
+            <div class="info-label" style="color: var(--accent-azul); font-weight: bold; margin-bottom: 8px;">📋 Especificações de Materiais e Medidas</div>
+            <div class="texto-memorial">
+                Foi feito com 1000 kg de persistência, 1000 kg de paciência, 50 sacos de determinação e 1 tonelada de felicidade.
+
+                - Pintor: Aplicar 2 demãos com os 2 rolos e 3 pincéis comprados.
+                - Eletricista: Instalar as tomadas no painel lateral conforme medidas tiradas.
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
